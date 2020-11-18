@@ -1,7 +1,7 @@
 # Telegram Web
 
 ### Interface
-![Sample screenshot]()
+![Sample screenshot](/readme/chat.png)
 
 
 ### Steps to run locally
