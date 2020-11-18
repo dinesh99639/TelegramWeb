@@ -1,4 +1,4 @@
-# Telegram Web
+<h2><centre>Telegram Web</centre></h2>
 
 ### Interface
 ![Sample screenshot](/readme/chat.png)
