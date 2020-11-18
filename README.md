@@ -1,4 +1,4 @@
-<div size="30" align="center"><b>Telegram Web</b></div>
+<div align="center"><h3>Telegram Web</h3></div>
 
 ### Interface
 ![Sample screenshot](/readme/chat.png)
