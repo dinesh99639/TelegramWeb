@@ -472,7 +472,7 @@ class Message extends Component {
         
         return (
             <div>
-                <div class="box" arr={1, 1, 1, 1}>
+                {/* <div class="box" arr={1, 1, 1, 1}> */}
                     {/* <svg>
                     <g>
                         <path d="m12 1034.4c0 1.1-0.895 2-2 2h-5-3c-1.1046 0-2 0.9-2 2v8 3c0 1.1 0.89543 2 2 2h20c1.105 0 2-0.9 2-2v-3-10c0-1.1-0.895-2-2-2h-10z" fill="#2980b9"/>
@@ -480,14 +480,18 @@ class Message extends Component {
                         <path d="m12 1033.4c0 1.1-0.895 2-2 2h-5-3c-1.1046 0-2 0.9-2 2v8 3c0 1.1 0.89543 2 2 2h20c1.105 0 2-0.9 2-2v-3-10c0-1.1-0.895-2-2-2h-10z" fill="#3498db"/>
                     </g>
                     </svg> */}
-                </div>
+                {/* </div> */}
                 {/* <div class="box"></div> */}
                 {/* <div class="box"></div> */}
                 {/* <div class="box"></div> */}
                 {/* <div class="box"></div> */}
                 {/* <div class="box"></div> */}
                 {/* <div class="box"></div> */}
-                {showDate && <DayMeta date={date} />}
+                {/* {showDate && <DayMeta date={date} />} */}
+                <img class="folder" src="icons/folder.svg"></img>
+                <img class="folder" src="icons/folder.svg"></img>
+                <img class="folder" src="icons/folder.svg"></img>
+
                 <div
                     className={classNames('message', {
                         'message-short': !tile,
@@ -505,7 +509,7 @@ class Message extends Component {
                     onClick={this.handleSelection}
                     onAnimationEnd={this.handleAnimationEnd}
                     onContextMenu={this.handleOpenContextMenu}>
-                    {showUnreadSeparator && <UnreadSeparator />}
+                    {/* {showUnreadSeparator && <UnreadSeparator />} */}
                     <div className='message-body'>
                         {/* <div className='message-padding'>
                             <CheckMarkIcon className='message-select-tick' />
@@ -555,7 +559,8 @@ class Message extends Component {
                             <div className='message-tile-padding' />
                         </div>
                         <div className='message-padding' /> */}
-                        <folder></folder>
+                        {/* <folder></folder> */}
+                        {/* <img width="45" src="icons/folder.svg"></img> */}
                     </div>
                 </div>
                 <MessageMenu

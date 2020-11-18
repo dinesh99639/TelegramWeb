@@ -31,7 +31,7 @@ import PlayerStore from '../../../Stores/PlayerStore';
 import SupergroupStore from '../../../Stores/SupergroupStore';
 import UserStore from '../../../Stores/UserStore';
 import TdLibController from '../../../Controllers/TdLibController';
-import './../MessagesList.css';
+import './MessagesList.css';
 
 const ScrollBehaviorEnum = Object.freeze({
     SCROLL_TO_BOTTOM: 'SCROLL_TO_BOTTOM',
@@ -1363,15 +1363,7 @@ class MessagesList extends React.Component {
 
                 let m = null;
                 if (isServiceMessage(x)) {
-                    m = (
-                        <ServiceMessage
-                            key={`chat_id=${x.chat_id} message_id=${x.id} show_date=${showDate}`}
-                            ref={el => this.itemsMap.set(i, el)}
-                            chatId={x.chat_id}
-                            messageId={x.id}
-                            showUnreadSeparator={separatorMessageId === x.id}
-                        />
-                    );
+                    m = null;
                 } else {
                     const showTitle = this.showMessageTitle(x, prevMessage, i === 0);
                     const nextShowTitle = this.showMessageTitle(nextMessage, x, false);
@@ -1424,12 +1416,12 @@ class MessagesList extends React.Component {
                 })}
                 onDragEnter={this.handleListDragEnter}>
                 <div ref={this.listRef} className='messages-list-wrapper' onScroll={this.handleScroll}>
-                    <div className='messages-list-top' />
+                    {/* <div className='messages-list-top' /> */}
                     <div ref={this.itemsRef} className='messages-list-items'>
                         {this.messages}
                     </div>
                 </div>
-                <ActionBar chatId={chatId} />
+                {/* <ActionBar chatId={chatId} /> */}
                 <Placeholder />
                 {scrollDownVisible && (
                     <ScrollDownButton ref={this.scrollDownButtonRef} onClick={this.handleScrollDownClick} />

@@ -372,3 +372,9 @@ pre code {
     /* background-color: blue; */
     float: left;
 }
+
+.folder {
+    width: 50px;
+    float: left;
+    padding: 10px 20px;
+}
