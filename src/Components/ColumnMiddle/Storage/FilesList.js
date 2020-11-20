@@ -246,7 +246,7 @@ class DialogDetails extends Component {
             <div className='dialog-details' style={style}>
                 <HeaderPlayer />
                 <Header chatId={chatId} />
-                <MessagesList ref={ref => (this.messagesList = ref)} chatId={chatId} messageId={messageId} />
+                <MessagesList ref={ref => (this.messagesList = ref)} chatId={chatId} messageId={messageId} storage_operations={this.props.storage_operations} />
                 {/* <Footer chatId={chatId} /> */}
                 <StickerSetDialog />
                 <ChatInfoDialog />

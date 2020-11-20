@@ -44,7 +44,7 @@ class TelegramApp extends Component {
     constructor(props) {
         super(props);
 
-        console.log(`Start Telegram Web ${packageJson.version}`);
+        console.log(`Running Telegram Web ${packageJson.version}`);
 
         this.state = {
             prevAuthorizationState: AuthorizationStore.current,

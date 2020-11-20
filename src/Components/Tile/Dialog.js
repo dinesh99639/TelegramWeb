@@ -124,7 +124,7 @@ class Dialog extends Component {
     }
 
     componentWillUnmount() {
-        ApplicationStore.off('clientUpdateChatId', this.onClientUpdateChatId);
+        // ApplicationStore.off('clientUpdateChatId', this.onClientUpdateChatId);
     }
 
     onClientUpdateChatId = update => {

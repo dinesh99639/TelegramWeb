@@ -11,7 +11,7 @@ import classNames from 'classnames';
 import ActionBar from '../ActionBar';
 import FilesDropTarget from '../FilesDropTarget';
 import StubMessage from '../../Message/StubMessage';
-import Message from '../../Message/Storage/FileItem';
+import FileItem from '../../Message/Storage/FileItem';
 import ServiceMessage from '../../Message/ServiceMessage';
 import Placeholder from '../Placeholder';
 import ScrollDownButton from '../ScrollDownButton';
@@ -1389,7 +1389,7 @@ class MessagesList extends React.Component {
                         //     showDate={showDate}
                         // />
 
-                        <Message
+                        <FileItem
                             key={`chat_id=${x.chat_id} message_id=${x.id} show_date=${showDate}`}
                             ref={el => this.itemsMap.set(i, el)}
                             chatId={x.chat_id}
@@ -1399,6 +1399,7 @@ class MessagesList extends React.Component {
                             showTail={showTail}
                             showUnreadSeparator={separatorMessageId === x.id}
                             showDate={showDate}
+                            storage_operations={this.props.storage_operations}
                         />
                     );
                 }

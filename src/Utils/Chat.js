@@ -1117,16 +1117,16 @@ export async function getChatMedia(chatId) {
     }
     console.log('[media] getChatMedia stop', chatId, media);
 
-    console.log("media");
-    if (media.document.length){
-        console.log(media.document);
-        var file_name = media.document[0].content.document.file_name;
-        var mime_type = media.document[0].content.document.mime_type;
-        var remote = media.document[0].content.document.document.remote;
-        var id = remote.id;
-        var unique_id = remote.unique_id;
-        console.log(file_name, mime_type, id, unique_id);
-    }
+    // console.log("media");
+    // if (media.document.length){
+    //     console.log(media.document);
+    //     var file_name = media.document[0].content.document.file_name;
+    //     var mime_type = media.document[0].content.document.mime_type;
+    //     var remote = media.document[0].content.document.document.remote;
+    //     var id = remote.id;
+    //     var unique_id = remote.unique_id;
+    //     console.log(file_name, mime_type, id, unique_id);
+    // }
 
     TdLibController.clientUpdate({
         '@type': 'clientUpdateChatMedia',

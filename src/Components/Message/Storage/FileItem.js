@@ -50,7 +50,7 @@ import '../Message.css';
 import Folder from './icons/folder';
 
 
-class Message extends Component {
+class FileItem extends Component {
     constructor(props) {
         super(props);
 
@@ -67,13 +67,19 @@ class Message extends Component {
             left: 0,
             top: 0
         };
-
+        
+        // console.warn("constructor");
+        
+        // this.loadFileStructure = this.loadFileStructure.bind(this);
         // this.loadFileStructure();
     }
 
     shouldComponentUpdate(nextProps, nextState) {
+        // console.warn("shouldComponentUpdate");
+        // this.loadFileStructure();
+
         const { chatId, messageId, sendingState, showUnreadSeparator, showTail, showTitle } = this.props;
-        const { contextMenu, selected, highlighted, shook, emojiMatches, folders } = this.state;
+        const { contextMenu, selected, highlighted, shook, emojiMatches } = this.state;
 
         if (nextProps.chatId !== chatId) {
             // console.log('Message.shouldComponentUpdate true chatId');
@@ -135,17 +141,17 @@ class Message extends Component {
     }
     
     componentDidMount() {
+        // console.warn("componentDidMount");
         MessageStore.on('clientUpdateMessageHighlighted', this.onClientUpdateMessageHighlighted);
         MessageStore.on('clientUpdateMessageSelected', this.onClientUpdateMessageSelected);
         MessageStore.on('clientUpdateMessageShake', this.onClientUpdateMessageShake);
         MessageStore.on('clientUpdateClearSelection', this.onClientUpdateClearSelection);
         MessageStore.on('updateMessageContent', this.onUpdateMessageContent);
-
-        // this.loadFileStructure();
     }
 
     loadFileStructure() {
-        const { t, chatId, messageId } = this.props;
+        // console.warn("loadFileStructure");
+        const { t, chatId, messageId, showUnreadSeparator, showTitle, showDate } = this.props;
         const message = MessageStore.get(chatId, messageId);
 
         // Storage load on storage page click
@@ -201,7 +207,9 @@ class Message extends Component {
                                                 files.push(<Folder folder_name={key+'.'+json[key]['@type']}></Folder>);
                                             }
                                         }
-                                        this.setState({ folders: folders, files: files });
+                                        
+                                        this.props.storage_operations("put", "folders", folders);
+                                        this.props.storage_operations("put", "files", files);
                                         this.forceUpdate();
                                         // console.warn("In state vars", this.state);
                                     }
@@ -217,6 +225,7 @@ class Message extends Component {
     }
 
     componentWillUnmount() {
+        // console.warn("componentWillUnmount");
         MessageStore.off('clientUpdateMessageHighlighted', this.onClientUpdateMessageHighlighted);
         MessageStore.off('clientUpdateMessageSelected', this.onClientUpdateMessageSelected);
         MessageStore.off('clientUpdateMessageShake', this.onClientUpdateMessageShake);
@@ -551,7 +560,9 @@ class Message extends Component {
                                                 files.push(<Folder folder_name={key+'.'+json[key]['@type']}></Folder>);
                                             }
                                         }
-                                        this.setState({ folders: folders, files: files });
+                                        
+                                        this.props.storage_operations("put", "folders", folders);
+                                        this.props.storage_operations("put", "files", files);
                                         this.forceUpdate();
                                         // console.warn("In state vars", this.state);
                                     }
@@ -565,7 +576,7 @@ class Message extends Component {
             });
         }
         
-        console.warn(this.state.folders);
+        
               
         return (
             <div>
@@ -578,11 +589,20 @@ class Message extends Component {
                     </g>
                     </svg> */}
                 {/* </div> */}
+                {/* <div class="box"></div> */}
+                {/* <div class="box"></div> */}
+                {/* <div class="box"></div> */}
+                {/* <div class="box"></div> */}
+                {/* <div class="box"></div> */}
+                {/* <div class="box"></div> */}
                 {/* {showDate && <DayMeta date={date} />} */}
                 
-                {this.loadFileStructure()}
-                {this.state.folders}
-                {this.state.files}
+
+                {/* {this.state.folders} */}
+                {/* {this.state.files} */}
+
+                {this.props.storage_operations("get", "folders")}
+                {this.props.storage_operations("get", "files")}
 
                 <div
                     className={classNames('message', {
@@ -674,6 +694,6 @@ class Message extends Component {
 //     withRestoreRef()
 // );
 
-const message = withTranslation(['translation', 'local'], { withRef: true })(Message);
+const file = withTranslation(['translation', 'local'], { withRef: true })(FileItem);
 
-export default message;
+export default file;

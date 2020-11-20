@@ -148,19 +148,19 @@ function saveBlob(blob, filename) {
         }
         // console.log("BlobURL", tempLink);
         // console.log("Test", blob, filename);
-        if (filename == "FileStructure.json"){
-            console.log("getMyId :", UserStore.getMyId());
-            fetch(blobURL).then((resp)=>{ 
-                return resp.text() }).then((text)=>{
-                    var json = JSON.parse(text);
-                    console.log(json, blob); 
-                }
-            );
-        }
+        // if (filename == "FileStructure.json"){
+        //     console.log("getMyId :", UserStore.getMyId());
+        //     fetch(blobURL).then((resp)=>{ 
+        //         return resp.text() }).then((text)=>{
+        //             var json = JSON.parse(text);
+        //             console.log(json, blob); 
+        //         }
+        //     );
+        // }
 
-        // document.body.appendChild(tempLink);
-        // tempLink.click();
-        // document.body.removeChild(tempLink);
+        document.body.appendChild(tempLink);
+        tempLink.click();
+        document.body.removeChild(tempLink);
         window.URL.revokeObjectURL(blobURL);
     }
 }

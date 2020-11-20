@@ -184,6 +184,17 @@ class MainPage extends React.Component {
         this.handleSelectChat(chat.id, null, popup);
     };
 
+    storage_operations = (method, type, data=undefined) => {
+        if (type == "folders") {
+            if (method == "get") return this.state.storage_folders;
+            else if (method == "put") this.setState({ storage_folders: data });
+        }
+        else if (type == "files") {
+            if (method == "get") return this.state.storage_files;
+            else if (method == "put") this.setState({ storage_files: data });
+        }
+    };
+
     render() {
         const {
             instantViewContent,
@@ -207,7 +218,7 @@ class MainPage extends React.Component {
         else if (this.state.page == "storage") {
             page = <>
                 <FileInfo page_change={this.page_change} />
-                <FilesList ref={this.dialogDetailsRef} getCurrentUserId={this.getCurrentUserId} />
+                <FilesList ref={this.dialogDetailsRef} getCurrentUserId={this.getCurrentUserId} storage_operations={this.storage_operations} />
                 {isChatDetailsVisible && <ChatInfo />}
             </>;
             console.log("Storage Selected");
