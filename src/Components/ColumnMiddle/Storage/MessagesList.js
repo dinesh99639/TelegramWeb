@@ -1421,7 +1421,7 @@ class MessagesList extends React.Component {
                         {this.messages}
                     </div>
                 </div>
-                {/* <ActionBar chatId={chatId} /> */}
+                <ActionBar chatId={chatId} />
                 <Placeholder />
                 {scrollDownVisible && (
                     <ScrollDownButton ref={this.scrollDownButtonRef} onClick={this.handleScrollDownClick} />

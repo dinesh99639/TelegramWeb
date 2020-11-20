@@ -369,12 +369,25 @@ pre code {
 .box {
     height: 30px;
     width: 30px;
-    /* background-color: blue; */
     float: left;
+    /* background-color: blue; */
 }
 
-.folder {
-    width: 50px;
+.folder-container {
+    width: 70px;
     float: left;
-    padding: 10px 20px;
+    padding: 10px 15px;
+    text-align: center;
+}
+
+.folder-icon {
+    width: 50px;
+}
+
+.folder-name {
+    width: 60px;
+    display: inline-block;
+    text-overflow: ellipsis;
+    overflow-x: hidden;
+    white-space: nowrap;
 }

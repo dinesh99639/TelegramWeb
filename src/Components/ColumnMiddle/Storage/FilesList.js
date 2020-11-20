@@ -247,7 +247,7 @@ class DialogDetails extends Component {
                 <HeaderPlayer />
                 <Header chatId={chatId} />
                 <MessagesList ref={ref => (this.messagesList = ref)} chatId={chatId} messageId={messageId} />
-                <Footer chatId={chatId} />
+                {/* <Footer chatId={chatId} /> */}
                 <StickerSetDialog />
                 <ChatInfoDialog />
                 {/*<Footer />*/}

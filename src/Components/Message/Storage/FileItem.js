@@ -47,7 +47,8 @@ import {
 } from '../../../Actions/Client';
 import MessageStore from '../../../Stores/MessageStore';
 import '../Message.css';
-import './icons/folder'
+import Folder from './icons/folder';
+
 
 class Message extends Component {
     constructor(props) {
@@ -66,11 +67,13 @@ class Message extends Component {
             left: 0,
             top: 0
         };
+
+        // this.loadFileStructure();
     }
 
     shouldComponentUpdate(nextProps, nextState) {
         const { chatId, messageId, sendingState, showUnreadSeparator, showTail, showTitle } = this.props;
-        const { contextMenu, selected, highlighted, shook, emojiMatches } = this.state;
+        const { contextMenu, selected, highlighted, shook, emojiMatches, folders } = this.state;
 
         if (nextProps.chatId !== chatId) {
             // console.log('Message.shouldComponentUpdate true chatId');
@@ -130,13 +133,87 @@ class Message extends Component {
         // console.log('Message.shouldComponentUpdate false');
         return false;
     }
-
+    
     componentDidMount() {
         MessageStore.on('clientUpdateMessageHighlighted', this.onClientUpdateMessageHighlighted);
         MessageStore.on('clientUpdateMessageSelected', this.onClientUpdateMessageSelected);
         MessageStore.on('clientUpdateMessageShake', this.onClientUpdateMessageShake);
         MessageStore.on('clientUpdateClearSelection', this.onClientUpdateClearSelection);
         MessageStore.on('updateMessageContent', this.onUpdateMessageContent);
+
+        // this.loadFileStructure();
+    }
+
+    loadFileStructure() {
+        const { t, chatId, messageId } = this.props;
+        const message = MessageStore.get(chatId, messageId);
+
+        // Storage load on storage page click
+        var json;
+        var folders = [];
+        var files = [];
+
+        const msg_content  = message.content;
+        if (msg_content['@type'] == 'messageDocument') {
+            const msg_document = msg_content.document;
+    
+            var file = msg_document.document;
+            var filename = msg_document.file_name;
+    
+            if (!file) return;
+            if (!filename) return;
+    
+            let blob = FileStore.getBlob(file.id) || file.blob;
+            
+            download(file, message, () => {
+                blob = FileStore.getBlob(file.id) || file.blob;
+                if (blob) {
+                    if (typeof window.navigator.msSaveBlob !== 'undefined') {
+                        window.navigator.msSaveBlob(blob, filename);
+                    } else {
+                        let blobURL = window.URL.createObjectURL(blob);
+                        let tempLink = document.createElement('a');
+                        tempLink.style.display = 'none';
+                        tempLink.href = blobURL;
+                        tempLink.setAttribute('download', filename);
+                        
+                        if (typeof tempLink.download === 'undefined') {
+                            tempLink.setAttribute('target', '_blank');
+                        }
+                        
+                        if (filename == "FileStructure.json"){
+                            // console.log("getMyId :", UserStore.getMyId());
+                            fetch(blobURL).then((resp)=>{ 
+                                return resp.text() }).then((text)=>{
+                                    json = JSON.parse(text);
+                                    if (json.type == "FileStructure") {
+                                        console.log("FileStructure.json Contents", json); 
+                                        console.log("Current Work");
+
+                                        json = json['@structure'];
+
+                                        for (var key in json) {
+                                            console.log(key, "->", json[key]);
+                                            if (json[key]['@type'] == "folder") {
+                                                folders.push(<Folder folder_name={key}></Folder>);
+                                            }
+                                            else {
+                                                files.push(<Folder folder_name={key+'.'+json[key]['@type']}></Folder>);
+                                            }
+                                        }
+                                        this.setState({ folders: folders, files: files });
+                                        this.forceUpdate();
+                                        // console.warn("In state vars", this.state);
+                                    }
+                                }
+                            );
+                        }
+                        
+                        window.URL.revokeObjectURL(blobURL);
+                    }
+                }
+            });
+        }
     }
 
     componentWillUnmount() {
@@ -422,6 +499,10 @@ class Message extends Component {
         
         
         // Storage load on storage page click
+        var json;
+        var folders = [];
+        var files = [];
+
         const msg_content  = message.content;
         if (msg_content['@type'] == 'messageDocument') {
             const msg_document = msg_content.document;
@@ -454,9 +535,25 @@ class Message extends Component {
                             // console.log("getMyId :", UserStore.getMyId());
                             fetch(blobURL).then((resp)=>{ 
                                 return resp.text() }).then((text)=>{
-                                    var json = JSON.parse(text);
+                                    json = JSON.parse(text);
                                     if (json.type == "FileStructure") {
                                         console.log("FileStructure.json Contents", json); 
+                                        console.log("Current Work");
+
+                                        json = json['@structure'];
+
+                                        for (var key in json) {
+                                            console.log(key, "->", json[key]);
+                                            if (json[key]['@type'] == "folder") {
+                                                folders.push(<Folder folder_name={key}></Folder>);
+                                            }
+                                            else {
+                                                files.push(<Folder folder_name={key+'.'+json[key]['@type']}></Folder>);
+                                            }
+                                        }
+                                        this.setState({ folders: folders, files: files });
+                                        this.forceUpdate();
+                                        // console.warn("In state vars", this.state);
                                     }
                                 }
                             );
@@ -466,10 +563,10 @@ class Message extends Component {
                     }
                 }
             });
-            
         }
         
-        
+        console.warn(this.state.folders);
+              
         return (
             <div>
                 {/* <div class="box" arr={1, 1, 1, 1}> */}
@@ -481,16 +578,11 @@ class Message extends Component {
                     </g>
                     </svg> */}
                 {/* </div> */}
-                {/* <div class="box"></div> */}
-                {/* <div class="box"></div> */}
-                {/* <div class="box"></div> */}
-                {/* <div class="box"></div> */}
-                {/* <div class="box"></div> */}
-                {/* <div class="box"></div> */}
                 {/* {showDate && <DayMeta date={date} />} */}
-                <img class="folder" src="icons/folder.svg"></img>
-                <img class="folder" src="icons/folder.svg"></img>
-                <img class="folder" src="icons/folder.svg"></img>
+                
+                {this.loadFileStructure()}
+                {this.state.folders}
+                {this.state.files}
 
                 <div
                     className={classNames('message', {

@@ -111,3 +111,7 @@
 .page-small .dialog-inner-wrapper {
     /*display: none;*/
 }
+
+.MuiPaper-root {
+    background-color: #17212b;    
+}
