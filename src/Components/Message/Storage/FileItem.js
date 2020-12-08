@@ -7,23 +7,24 @@
 
 import React, { Component } from 'react';
 import classNames from 'classnames';
-import { compose } from '../../../Utils/HOC';
+// import { compose } from '../../../Utils/HOC';
 import { withTranslation } from 'react-i18next';
-import { withRestoreRef, withSaveRef } from '../../../Utils/HOC';
-import CheckMarkIcon from '@material-ui/icons/Check';
-import DayMeta from '../DayMeta';
-import Reply from '../Reply';
-import Forward from '../Forward';
+// import { withRestoreRef, withSaveRef } from '../../../Utils/HOC';
+// import CheckMarkIcon from '@material-ui/icons/Check';
+// import DayMeta from '../DayMeta';
+// import Reply from '../Reply';
+// import Forward from '../Forward';
 import Meta from '../Meta';
-import MessageAuthor from '../MessageAuthor';
+// import MessageAuthor from '../MessageAuthor';
+// import Header from '../../ColumnMiddle/Storage/Header';
 import MessageMenu from '../MessageMenu';
 import UserTile from '../../Tile/UserTile';
 import ChatTile from '../../Tile/ChatTile';
 import EmptyTile from '../../Tile/EmptyTile';
-import UnreadSeparator from '../UnreadSeparator';
-import WebPage from '../Media/WebPage';
+// import UnreadSeparator from '../UnreadSeparator';
+// import WebPage from '../Media/WebPage';
 import FileStore from '../../../Stores/FileStore';
-import UserStore from '../../../Stores/UserStore';
+// import UserStore from '../../../Stores/UserStore';
 import { download, saveOrDownload, supportsStreaming } from '../../../Utils/File';
 import {
     getEmojiMatches,
@@ -65,12 +66,18 @@ class FileItem extends Component {
             contextMenu: false,
             copyLink: null,
             left: 0,
-            top: 0
+            top: 0,
+
+            folders: [],
+            files: []
         };
         
         // console.warn("constructor");
+        // this.setState({path: this.props.getPath()});
         
-        // this.loadFileStructure = this.loadFileStructure.bind(this);
+        this.openFolder = this.openFolder.bind(this);
+        this.loadFileStructure = this.loadFileStructure.bind(this);
+        
         // this.loadFileStructure();
     }
 
@@ -149,9 +156,71 @@ class FileItem extends Component {
         MessageStore.on('updateMessageContent', this.onUpdateMessageContent);
     }
 
+    openFolder(folder) {
+        // if (folder!='') {
+        // if (true) {
+            let format = '[\"'+folder+'\"]["@structure"]';
+            let newPath = this.props.getPath() + format;
+            // console.log(newPath);
+
+            this.props.setPath(newPath);
+        // }
+
+
+
+        var folders = [];
+        var files = [];
+        var json = this.state.json;
+
+        let path = eval(newPath);
+
+        for (let key in path) {
+            // console.log(key, "->", path[key]);
+            if (path[key]['@type'] == "folder") {
+                folders.push(
+                    <Folder 
+                        folder_name={key}
+                        openFolder={this.openFolder}
+                    ></Folder>
+                );
+            }
+            else {
+                files.push(
+                    <Folder 
+                        folder_name={key}
+                        openFolder={this.openFolder}
+                    ></Folder>
+                );
+            }
+        }
+        
+        this.setState({
+            folders: folders,
+            files: files
+        });
+
+        // console.warn(folders);
+        // this.props.storage_operations("put", "folders", folders);
+        // this.props.storage_operations("put", "files", files);
+        this.forceUpdate();
+    }
+
+    goBackPath() {
+        let current = this.props.getPath();
+        var pos = current.lastIndexOf('[', current.lastIndexOf('[')-1);
+        var newPath = current.substring(0, pos);
+        
+        this.setPath(newPath);
+
+        this.openFolder('');
+    }
+
     loadFileStructure() {
         // console.warn("loadFileStructure");
-        const { t, chatId, messageId, showUnreadSeparator, showTitle, showDate } = this.props;
+        // const { t, chatId, messageId, showUnreadSeparator, showTitle, showDate } = this.props;
+        const { chatId, messageId } = this.props;
+        // console.log("ids\n", chatId, messageId);
+        
         const message = MessageStore.get(chatId, messageId);
 
         // Storage load on storage page click
@@ -169,6 +238,8 @@ class FileItem extends Component {
             if (!file) return;
             if (!filename) return;
     
+            // console.warn("FileId", file.id);
+
             let blob = FileStore.getBlob(file.id) || file.blob;
             
             download(file, message, () => {
@@ -192,24 +263,42 @@ class FileItem extends Component {
                             fetch(blobURL).then((resp)=>{ 
                                 return resp.text() }).then((text)=>{
                                     json = JSON.parse(text);
+
+                                    this.setState({json: json});
+
                                     if (json.type == "FileStructure") {
-                                        console.log("FileStructure.json Contents", json); 
-                                        console.log("Current Work");
+                                        // console.log("Current Work");
+                                        // console.log("FileStructure.json Contents", json); 
 
-                                        json = json['@structure'];
+                                        let path = eval(this.props.getPath());
 
-                                        for (var key in json) {
-                                            console.log(key, "->", json[key]);
-                                            if (json[key]['@type'] == "folder") {
-                                                folders.push(<Folder folder_name={key}></Folder>);
+                                        for (let key in path) {
+                                            // console.log(key, "->", path[key]);
+                                            if (path[key]['@type'] == "folder") {
+                                                folders.push(
+                                                    <Folder 
+                                                        folder_name={key}
+                                                        openFolder={this.openFolder}
+                                                    ></Folder>
+                                                );
                                             }
                                             else {
-                                                files.push(<Folder folder_name={key+'.'+json[key]['@type']}></Folder>);
+                                                files.push(
+                                                    <Folder 
+                                                        folder_name={key}
+                                                        openFolder={this.openFolder}
+                                                    ></Folder>
+                                                );
                                             }
                                         }
                                         
-                                        this.props.storage_operations("put", "folders", folders);
-                                        this.props.storage_operations("put", "files", files);
+                                        // return {folders: folders, files: files};
+                                        this.setState({
+                                            folders: folders,
+                                            files: files
+                                        });
+                                        // this.props.storage_operations("put", "folders", folders);
+                                        // this.props.storage_operations("put", "files", files);
                                         this.forceUpdate();
                                         // console.warn("In state vars", this.state);
                                     }
@@ -507,102 +596,20 @@ class FileItem extends Component {
         // );
         
         
-        // Storage load on storage page click
-        var json;
-        var folders = [];
-        var files = [];
-
-        const msg_content  = message.content;
-        if (msg_content['@type'] == 'messageDocument') {
-            const msg_document = msg_content.document;
-    
-            var file = msg_document.document;
-            var filename = msg_document.file_name;
-    
-            if (!file) return;
-            if (!filename) return;
-    
-            let blob = FileStore.getBlob(file.id) || file.blob;
-            
-            download(file, message, () => {
-                blob = FileStore.getBlob(file.id) || file.blob;
-                if (blob) {
-                    if (typeof window.navigator.msSaveBlob !== 'undefined') {
-                        window.navigator.msSaveBlob(blob, filename);
-                    } else {
-                        let blobURL = window.URL.createObjectURL(blob);
-                        let tempLink = document.createElement('a');
-                        tempLink.style.display = 'none';
-                        tempLink.href = blobURL;
-                        tempLink.setAttribute('download', filename);
-                        
-                        if (typeof tempLink.download === 'undefined') {
-                            tempLink.setAttribute('target', '_blank');
-                        }
-                        
-                        if (filename == "FileStructure.json"){
-                            // console.log("getMyId :", UserStore.getMyId());
-                            fetch(blobURL).then((resp)=>{ 
-                                return resp.text() }).then((text)=>{
-                                    json = JSON.parse(text);
-                                    if (json.type == "FileStructure") {
-                                        console.log("FileStructure.json Contents", json); 
-                                        console.log("Current Work");
-
-                                        json = json['@structure'];
-
-                                        for (var key in json) {
-                                            console.log(key, "->", json[key]);
-                                            if (json[key]['@type'] == "folder") {
-                                                folders.push(<Folder folder_name={key}></Folder>);
-                                            }
-                                            else {
-                                                files.push(<Folder folder_name={key+'.'+json[key]['@type']}></Folder>);
-                                            }
-                                        }
-                                        
-                                        this.props.storage_operations("put", "folders", folders);
-                                        this.props.storage_operations("put", "files", files);
-                                        this.forceUpdate();
-                                        // console.warn("In state vars", this.state);
-                                    }
-                                }
-                            );
-                        }
-                        
-                        window.URL.revokeObjectURL(blobURL);
-                    }
-                }
-            });
-        }
+        this.loadFileStructure();
         
         
               
         return (
             <div>
-                {/* <div class="box" arr={1, 1, 1, 1}> */}
-                    {/* <svg>
-                    <g>
-                        <path d="m12 1034.4c0 1.1-0.895 2-2 2h-5-3c-1.1046 0-2 0.9-2 2v8 3c0 1.1 0.89543 2 2 2h20c1.105 0 2-0.9 2-2v-3-10c0-1.1-0.895-2-2-2h-10z" fill="#2980b9"/>
-                        <path d="m2 2c-1.1046 0-2 0.8954-2 2v5h10v1h14v-5c0-1.1046-0.895-2-2-2h-10.281c-0.346-0.5969-0.979-1-1.719-1h-8z" fill="#2980b9" transform="translate(0 1028.4)"/>
-                        <path d="m12 1033.4c0 1.1-0.895 2-2 2h-5-3c-1.1046 0-2 0.9-2 2v8 3c0 1.1 0.89543 2 2 2h20c1.105 0 2-0.9 2-2v-3-10c0-1.1-0.895-2-2-2h-10z" fill="#3498db"/>
-                    </g>
-                    </svg> */}
-                {/* </div> */}
-                {/* <div class="box"></div> */}
-                {/* <div class="box"></div> */}
-                {/* <div class="box"></div> */}
-                {/* <div class="box"></div> */}
-                {/* <div class="box"></div> */}
-                {/* <div class="box"></div> */}
-                {/* {showDate && <DayMeta date={date} />} */}
-                
 
-                {/* {this.state.folders} */}
-                {/* {this.state.files} */}
+                {/* <Header
+                    ref={this.headerRef}
+                    goBackPath={this.goBackPath}
+                /> */}
 
-                {this.props.storage_operations("get", "folders")}
-                {this.props.storage_operations("get", "files")}
+                {this.state.folders}
+                {this.state.files}
 
                 <div
                     className={classNames('message', {
@@ -621,58 +628,8 @@ class FileItem extends Component {
                     onClick={this.handleSelection}
                     onAnimationEnd={this.handleAnimationEnd}
                     onContextMenu={this.handleOpenContextMenu}>
-                    {/* {showUnreadSeparator && <UnreadSeparator />} */}
                     <div className='message-body'>
-                        {/* <div className='message-padding'>
-                            <CheckMarkIcon className='message-select-tick' />
-                        </div>
-                        <div className={classNames('message-wrapper', { 'shook': shook })}>
-                            {tile}
-                            <div
-                                className={classNames('message-content', {
-                                    'message-bubble': withBubble,
-                                    'message-bubble-out': withBubble && isOutgoing
-                                })}
-                                style={style}>
-                                {withBubble && ((showTitle && !suppressTitle) || showForward) && (
-                                    <div className='message-title'>
-                                        {showTitle && !showForward && (
-                                            <MessageAuthor chatId={chatId} openChat userId={sender_user_id} openUser />
-                                        )}
-                                        {showForward && <Forward forwardInfo={forward_info} />}
-                                    </div>
-                                )}
-                                {showReply && (
-                                    <Reply
-                                        chatId={chatId}
-                                        messageId={reply_to_message_id}
-                                        onClick={this.handleReplyClick}
-                                    />
-                                )}
-                                {media}
-                                <div
-                                    className={classNames('message-text', {
-                                        'message-text-1emoji': emojiMatches === 1,
-                                        'message-text-2emoji': emojiMatches === 2,
-                                        'message-text-3emoji': emojiMatches === 3
-                                    })}>
-                                    {text}
-                                </div>
-                                {webPage && (
-                                    <WebPage
-                                        chatId={chatId}
-                                        messageId={messageId}
-                                        openMedia={this.openMedia}
-                                        meta={inlineMeta}
-                                    />
-                                )}
-                                {withBubble && meta}
-                            </div>
-                            <div className='message-tile-padding' />
-                        </div>
-                        <div className='message-padding' /> */}
-                        {/* <folder></folder> */}
-                        {/* <img width="45" src="icons/folder.svg"></img> */}
+                        
                     </div>
                 </div>
                 <MessageMenu

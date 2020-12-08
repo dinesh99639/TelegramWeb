@@ -487,7 +487,7 @@ function loadDocumentContent(store, document, message, useFileSize = true) {
         () => FileStore.updateDocumentBlob(chatId, messageId, id),
         () => {
             if (!useFileSize || (size && size < PRELOAD_DOCUMENT_SIZE)) {
-                FileStore.getRemoteFile(id, FILE_PRIORITY, message || document);
+                // FileStore.getRemoteFile(id, FILE_PRIORITY, message || document);
             }
         }
     );

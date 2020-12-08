@@ -66,7 +66,11 @@ class MessagesList extends React.Component {
         this.defferedActions = [];
         this.itemsMap = new Map();
 
+        // this.setState({path: this.props.getPath()});
+
         this.updateItemsInView = throttle(this.updateItemsInView, 500);
+
+        this.tmp = this.tmp.bind(this);
     }
 
     hasLastMessage() {
@@ -75,6 +79,8 @@ class MessagesList extends React.Component {
 
         const chat = ChatStore.get(chatId);
         if (!chat) return false;
+
+        // console.log("ChatCurrent", chat);
 
         const { last_message } = chat;
         if (!last_message) return true;
@@ -581,6 +587,7 @@ class MessagesList extends React.Component {
 
             MessageStore.setItems(result.messages);
             result.messages.reverse();
+            // console.warn("...", result.messages);
 
             let separatorMessageId = this.state.separatorMessageId;
             if (chatId !== previousChatId) {
@@ -647,11 +654,11 @@ class MessagesList extends React.Component {
                 });
 
                 const scrollMessage = getScrollMessage(this.snapshot, this.itemsRef);
-                console.log('[scroll] start setScrollPosition', [previousChatId, previousChat, this.snapshot, scrollMessage]);
+                // console.log('[scroll] start setScrollPosition', [previousChatId, previousChat, this.snapshot, scrollMessage]);
                 const message = this.messages[scrollMessage.index];
                 if (message) {
                     const { chatId, messageId } = message.props;
-                    console.log('[scroll] stop setScrollPosition', [previousChatId, previousChat], { chatId, messageId, offset: scrollMessage.offset });
+                    // console.log('[scroll] stop setScrollPosition', [previousChatId, previousChat], { chatId, messageId, offset: scrollMessage.offset });
                     ChatStore.setScrollPosition(previousChatId, { chatId, messageId, offset: scrollMessage.offset });
                 }
             }
@@ -748,6 +755,7 @@ class MessagesList extends React.Component {
         }).finally(() => {
             this.loading = false;
         });
+            // console.warn("res", result);
         // console.log('[p] getChatHistory result', fromMessageId, limit, result);
 
         if (sessionId !== this.sessionId) {
@@ -872,6 +880,7 @@ class MessagesList extends React.Component {
         }).finally(() => {
             this.loading = false;
         });
+        // console.warn("res", result);
 
         if (sessionId !== this.sessionId) {
             return;
@@ -1115,7 +1124,7 @@ class MessagesList extends React.Component {
     };
 
     scrollToPosition = position => {
-        console.log('[scroll] scrollToPosition', this.props.chatId, position);
+        // console.log('[scroll] scrollToPosition', this.props.chatId, position);
         const { messageId, offset } = position;
         const { history } = this.state;
         const list = this.listRef.current;
@@ -1338,6 +1347,23 @@ class MessagesList extends React.Component {
         return false;
     }
 
+    tmp(cid, mid) {
+        const result = TdLibController.send({
+            '@type': 'getChatHistory',
+            chat_id: cid,
+            from_message_id: mid,
+            offset: 0,
+            limit: 10
+        }).then(data => {
+            console.warn("data-ml", cid, data);
+            // console.trace();
+            // return data;
+        });
+
+        // console.warn("Hello", result);
+        // return result;
+    }
+
     render() {
         const { chatId } = this.props;
         const { history, separatorMessageId, clearHistory, selectionActive, scrollDownVisible } = this.state;
@@ -1350,6 +1376,7 @@ class MessagesList extends React.Component {
         this.messages = clearHistory
             ? null
             : history.map((x, i) => {
+                // console.log(x, i);
                 /// message id=5 prev
                 /// message id=6 current
                 /// message id=7 next
@@ -1390,18 +1417,24 @@ class MessagesList extends React.Component {
                         // />
 
                         <FileItem
-                            key={`chat_id=${x.chat_id} message_id=${x.id} show_date=${showDate}`}
-                            ref={el => this.itemsMap.set(i, el)}
+                            // key={`chat_id=${x.chat_id} message_id=${x.id} show_date=${showDate}`}
+                            // ref={el => this.itemsMap.set(i, el)}
                             chatId={x.chat_id}
                             messageId={x.id}
-                            sendingState={x.sending_state}
-                            showTitle={showTitle}
-                            showTail={showTail}
-                            showUnreadSeparator={separatorMessageId === x.id}
-                            showDate={showDate}
-                            storage_operations={this.props.storage_operations}
+                            // sendingState={x.sending_state}
+                            // showTitle={showTitle}
+                            // showTail={showTail}
+                            // showUnreadSeparator={separatorMessageId === x.id}
+                            // showDate={showDate}
+                            
+                            getPath={this.props.getPath}
+                            setPath={this.props.setPath}
                         />
                     );
+                    // console.log("2)\nchatId", x.chat_id, "\nmessageId", x.id);
+                    // console.warn("data-ml", this.tmp(x.chat_id, x.id));
+                    
+                    
                 }
 
                 return m;
@@ -1409,6 +1442,12 @@ class MessagesList extends React.Component {
 
               });
         // console.log('[p] messagesList.render');
+
+        // const chat = ChatStore.get(this.props.chatId);
+        // console.log("ChatCurrent", chat);
+
+        // this.tmp(this.props.chatId, this.props.messageId);
+        // console.log("2)\nchatId", this.props.chatId, "\nmessageId", this.props.messageId);
 
         return (
             <div

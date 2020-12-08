@@ -8,7 +8,7 @@
 import React from 'react';
 import emojiRegex from 'emoji-regex';
 import MentionLink from '../Components/Additional/MentionLink';
-import Poll from '../Components/Message/Media/Poll';
+// import Poll from '../Components/Message/Media/Poll';
 import SafeLink from '../Components/Additional/SafeLink';
 import dateFormat from '../Utils/Date';
 import { searchChat, setMediaViewerContent } from '../Actions/Client';
@@ -16,7 +16,10 @@ import { getChatTitle, isMeChat } from './Chat';
 import { openUser } from './../Actions/Client';
 import { getFitSize, getPhotoSize, getSize } from './Common';
 import { download, saveOrDownload, supportsStreaming } from './File';
-import { getAudioSubtitle, getAudioTitle } from './Media';
+
+// import { getAudioSubtitle, getAudioTitle } from './Media';
+import { getAudioTitle } from './Media';
+
 import { getDecodedUrl } from './Url';
 import { getServiceMessageContent } from './ServiceMessage';
 import { getUserFullName } from './User';

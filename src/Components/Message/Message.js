@@ -7,9 +7,9 @@
 
 import React, { Component } from 'react';
 import classNames from 'classnames';
-import { compose } from '../../Utils/HOC';
+// import { compose } from '../../Utils/HOC';
 import { withTranslation } from 'react-i18next';
-import { withRestoreRef, withSaveRef } from '../../Utils/HOC';
+// import { withRestoreRef, withSaveRef } from '../../Utils/HOC';
 import CheckMarkIcon from '@material-ui/icons/Check';
 import DayMeta from './DayMeta';
 import Reply from './Reply';
@@ -23,8 +23,11 @@ import EmptyTile from '../Tile/EmptyTile';
 import UnreadSeparator from './UnreadSeparator';
 import WebPage from './Media/WebPage';
 import FileStore from '../../Stores/FileStore';
-import UserStore from '../../Stores/UserStore';
-import { download, saveOrDownload, supportsStreaming } from '../../Utils/File';
+// import UserStore from '../../Stores/UserStore';
+
+import { download } from '../../Utils/File';
+// import { download, saveOrDownload, supportsStreaming } from '../../Utils/File';
+
 import {
     getEmojiMatches,
     getText,

@@ -39,6 +39,8 @@ class MainPage extends React.Component {
 
         const { isChatDetailsVisible, mediaViewerContent, profileMediaViewerContent, isSmallWidth } = AppStore;
 
+        this.storageUpdate = this.storageUpdate.bind(this);
+
         this.state = {
             isChatDetailsVisible,
             mediaViewerContent,
@@ -47,8 +49,16 @@ class MainPage extends React.Component {
             forwardInfo: null,
             instantViewContent: null,
             videoInfo: null,
-            page: "chats"
+            page: "chats",
+            
+            storage: {
+                mounted: false,
+                path: 'json["@structure"]',
+                json: null,
+                storageUpdate: this.storageUpdate
+            }
         };
+
     }
 
     page_change (page) {
@@ -58,6 +68,16 @@ class MainPage extends React.Component {
 
     getCurrentUserId () {
         return UserStore.getMyId();
+    }
+
+    storageUpdate(data) {
+        var storage = {
+            mounted: true,
+            path: data.path,
+            json: data.json,
+            storageUpdate: this.storageUpdate
+        }
+        this.setState({ storage: storage });
     }
 
     componentDidMount() {
@@ -218,7 +238,12 @@ class MainPage extends React.Component {
         else if (this.state.page == "storage") {
             page = <>
                 <FileInfo page_change={this.page_change} />
-                <FilesList ref={this.dialogDetailsRef} getCurrentUserId={this.getCurrentUserId} storage_operations={this.storage_operations} />
+                <FilesList 
+                    ref={this.dialogDetailsRef} 
+                    getCurrentUserId={this.getCurrentUserId} 
+                    // storage_operations={this.storage_operations}
+                    storage={this.state.storage} 
+                />
                 {isChatDetailsVisible && <ChatInfo />}
             </>;
             console.log("Storage Selected");

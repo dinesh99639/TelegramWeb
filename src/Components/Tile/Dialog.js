@@ -79,6 +79,7 @@ class Dialog extends Component {
     shouldComponentUpdate(nextProps, nextState) {
         const { chatId, t, hidden, isLastPinned, chatList, style } = this.props;
         const { contextMenu } = this.state;
+        // console.warn(t);
 
         if (nextProps.chatId !== chatId) {
             // console.log('[vl] Dialog.shouldUpdate true chatId');
@@ -124,7 +125,7 @@ class Dialog extends Component {
     }
 
     componentWillUnmount() {
-        // ApplicationStore.off('clientUpdateChatId', this.onClientUpdateChatId);
+        ApplicationStore.off('clientUpdateChatId', this.onClientUpdateChatId);
     }
 
     onClientUpdateChatId = update => {

@@ -205,7 +205,7 @@ class ProfileMediaViewer extends React.Component {
         }
 
         let inputFile = null;
-        let inputMessagePhoto = null;
+        // let inputMessagePhoto = null;
         const inHistory = this.history && index >= 0 && index < this.history.length;
         if (inHistory) {
             const photo = getProfilePhoto(this.history[index]);
