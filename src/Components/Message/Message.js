@@ -421,55 +421,6 @@ class Message extends Component {
         //         />
         //     </StubMessage>
         // );
-        
-        
-        // Storage load on storage page click
-        const msg_content  = message.content;
-        if (msg_content['@type'] == 'messageDocument') {
-            const msg_document = msg_content.document;
-    
-            var file = msg_document.document;
-            var filename = msg_document.file_name;
-    
-            if (!file) return;
-            if (!filename) return;
-    
-            let blob = FileStore.getBlob(file.id) || file.blob;
-            
-            download(file, message, () => {
-                blob = FileStore.getBlob(file.id) || file.blob;
-                if (blob) {
-                    if (typeof window.navigator.msSaveBlob !== 'undefined') {
-                        window.navigator.msSaveBlob(blob, filename);
-                    } else {
-                        let blobURL = window.URL.createObjectURL(blob);
-                        let tempLink = document.createElement('a');
-                        tempLink.style.display = 'none';
-                        tempLink.href = blobURL;
-                        tempLink.setAttribute('download', filename);
-                        
-                        if (typeof tempLink.download === 'undefined') {
-                            tempLink.setAttribute('target', '_blank');
-                        }
-                        
-                        if (filename == "FileStructure.json"){
-                            // console.log("getMyId :", UserStore.getMyId());
-                            fetch(blobURL).then((resp)=>{ 
-                                return resp.text() }).then((text)=>{
-                                    var json = JSON.parse(text);
-                                    if (json.type == "FileStructure") {
-                                        console.log("FileStructure.json Contents", json);
-                                    }
-                                }
-                            );
-                        }
-                        
-                        window.URL.revokeObjectURL(blobURL);
-                    }
-                }
-            });
-
-        }
 
 
         return (

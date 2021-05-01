@@ -192,7 +192,7 @@ class MessageMenu extends React.PureComponent {
 
     handleDelete = event => {
         const { chatId, messageId, onClose } = this.props;
-
+        console.log("DMID", messageId)
         onClose(event);
         deleteMessages(chatId, [messageId]);
     };
@@ -219,6 +219,7 @@ class MessageMenu extends React.PureComponent {
 
     render() {
         const { t, chatId, messageId, anchorPosition, copyLink, open, onClose } = this.props;
+        console.log("msgmenuid", messageId);
         const { confirmStopPoll } = this.state;
         if (!confirmStopPoll && !open) return null;
 

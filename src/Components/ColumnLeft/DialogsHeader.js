@@ -14,7 +14,7 @@ import AppStore from '../../Stores/ApplicationStore';
 import '../ColumnMiddle/Header.css';
 
 import FolderIcon from '@material-ui/icons/Folder';
-import WhatsAppIcon from '@material-ui/icons/WhatsApp';
+import TelegramIcon from '@material-ui/icons/Telegram';
 
 class DialogsHeader extends React.Component {
     constructor(props) {
@@ -147,7 +147,7 @@ class DialogsHeader extends React.Component {
                     {content}
                 </div>
                 <div className='header-redirects'>                    
-                    <WhatsAppIcon className="redirectIcon" fontSize="large" onClick={()=> this.props.page_change("chats")} />
+                    <TelegramIcon className="redirectIcon" fontSize="large" onClick={()=> this.props.page_change("chats")} />
                     <FolderIcon className="redirectIcon" fontSize="large" onClick={()=> this.props.page_change("storage")} />
                 </div>
             </>

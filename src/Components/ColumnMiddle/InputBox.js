@@ -712,60 +712,6 @@ class InputBox extends Component {
                 openEditMedia: true,
                 newItem
             });
-            
-            // Test
-            // const { media, file } = newItem;
-
-            // var content = {
-            //     '@type': 'inputMessageDocument',
-            //     document: { '@type': 'inputFileBlob', name: file.name, data: file },
-            //     thumbnail: null,
-            //     caption: {
-            //         "@type": "formattedText",
-            //         "entities": [],
-            //         "text": ""
-            //     }
-            // };
-            // if (!content) return;
-            // console.warn("content", content);
-            
-            // var file = new File(["0010"], "filename.json", {type: "application/json", lastModified: new Date().getTime()})
-            // var content = {
-            //     '@type': 'inputMessageDocument',
-            //     document: { '@type': 'inputFileBlob', name: file.name, data: file },
-            //     thumbnail: null,
-            //     caption: {
-            //         "@type": "formattedText",
-            //         "entities": [],
-            //         "text": ""
-            //     }
-            // };
-            
-            
-            
-            // // console.log("NewItem:", newItem);
-            // // onSend(content, file);
-            // const { chatId } = this.state;
-            // console.log(chatId);
-            // // await AppStore.invokeScheduledAction(`clientUpdateClearHistory chatId=${chatId}`);
-
-            // const result = await TdLibController.send({
-            //     '@type': 'sendMessage',
-            //     chat_id: chatId,
-            //     reply_to_message_id: 0,
-            //     input_message_content: content
-            // });
-
-            // this.saveDraft();
-
-            // TdLibController.send({
-            //     '@type': 'viewMessages',
-            //     chat_id: chatId,
-            //     message_ids: [result.id]
-            // });
-
-            // FileStore.uploadFile(result.content.document.document.id, result)
-            // Test End
         } else {
             Array.from(files).forEach(file => {
                 const content = {

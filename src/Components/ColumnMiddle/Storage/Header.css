@@ -29,8 +29,8 @@
     width: 100%;
     text-align: right;
 }
-.MuiButtonBase-root {
-    min-width: none;
+.operations .MuiButton-root {
+    min-width: 0;
     padding: 10px;
     border-radius: 50%;
 }

@@ -54,7 +54,7 @@ class DialogDetails extends React.Component {
         this.addFolder = this.addFolder.bind(this);
 
 
-        this.getStorageChannelId();
+        // this.getStorageChannelId();
         // console.warn(this.state);
     }
 
@@ -76,18 +76,22 @@ class DialogDetails extends React.Component {
     //     // return false;
     //     return true;
     // }
+    UNSAFE_componentWillMount() {
 
+    }
     componentDidMount() {
         // AppStore.on('clientUpdateChatDetailsVisibility', this.onClientUpdateChatDetailsVisibility);
-        AppStore.on('clientUpdateChatId', this.onClientUpdateChatId);
+        // AppStore.on('clientUpdateChatId', this.onClientUpdateChatId);
         // ChatStore.on('clientUpdateChatBackground', this.onClientUpdateChatBackground);
         // FileStore.on('clientUpdateDocumentBlob', this.onClientUpdateDocumentBlob);
         // FileStore.on('clientUpdateDocumentThumbnailBlob', this.onClientUpdateDocumentThumbnailBlob);
+        this.getStorageChannelId();
+        console.log("Mounted");
     }
     
     componentWillUnmount() {
         // AppStore.off('clientUpdateChatDetailsVisibility', this.onClientUpdateChatDetailsVisibility);
-        AppStore.off('clientUpdateChatId', this.onClientUpdateChatId);
+        // AppStore.off('clientUpdateChatId', this.onClientUpdateChatId);
         // ChatStore.off('clientUpdateChatBackground', this.onClientUpdateChatBackground);
         // FileStore.off('clientUpdateDocumentBlob', this.onClientUpdateDocumentBlob);
         // FileStore.off('clientUpdateDocumentThumbnailBlob', this.onClientUpdateDocumentThumbnailBlob);
@@ -100,13 +104,13 @@ class DialogDetails extends React.Component {
 
     scrollToStart() {}
 
-    onClientUpdateChatId = update => {
-        this.setState({
-            chatId: update.nextChatId,
-            messageId: update.nextMessageId
-        });
-        // console.warn(update);
-    };
+    // onClientUpdateChatId = update => {
+    //     this.setState({
+    //         chatId: update.nextChatId,
+    //         messageId: update.nextMessageId
+    //     });
+    //     // console.warn(update);
+    // };
 
     getPath() {
         return this.state.path;
@@ -124,6 +128,7 @@ class DialogDetails extends React.Component {
         var json = this.state.json;
 
         path = eval(path);
+        console.log("Path", path)
 
         for (let key in path) {
             // console.log(key, "->", path[key]);
@@ -193,36 +198,16 @@ class DialogDetails extends React.Component {
         });
         this.setState({ chatId: storage_channel_id });
         
-        if (!this.state.mounted) this.loadJSONFile();
-        else this.loadFolders(this.state.path);
+        // if (!this.state.mounted) this.loadJSONFile();
+        // else this.loadFolders(this.state.path);
+        this.loadJSONFile();
     }
 
-    getFileStructureJSON(data, pre=false) {
+    async getFileStructureJSON() {
+        const { chatId } = this.state;
         var fs = null;
-        var pre_fs = null;
-        var n = data.messages.length;
-        for (var i=0; i<n; i++) {
-            console.log(data.messages[i]);
-            if (data.messages[i].content.document.file_name == "FileStructure.json") {
-                fs = data.messages[i].content.document;
-                for (var j=i+1; j<n; j++) {
-                    if (data.messages[i].content.document.file_name == "FileStructure.json") {
-                        pre_fs = data.messages[i].content.document;
-                        break;
-                    }
-                }
-                break;
-            }
-        }
-
-        return (!pre)?fs:pre_fs;
-    }
-
-    loadJSONFile() {
-        const { chatId, messageId } = this.state;
-        // console.warn("cid, mid:", chatId, messageId);
-
-        TdLibController.send({
+        
+        var res = await TdLibController.send({
             '@type': 'searchChatMessages',
             chat_id: chatId,
             query: '',
@@ -233,57 +218,58 @@ class DialogDetails extends React.Component {
             filter: { '@type': 'searchMessagesFilterDocument' }
         }).then((data)=> {
             // console.warn("searchMessagesFilterDocument", data);
-            const message = MessageStore.get(chatId, messageId);
-
-            var fs = this.getFileStructureJSON(data);
-            console.log("fs", fs);
-            
-            var file = fs.document;
-            var filename = fs.file_name;
-            // console.warn("file:", file);
-
-            let blob = FileStore.getBlob(file.id) || file.blob;
-            
-            download(file, message, () => {
-                blob = FileStore.getBlob(file.id) || file.blob;
-                if (blob) {
-                    if (typeof window.navigator.msSaveBlob !== 'undefined') {
-                        window.navigator.msSaveBlob(blob, filename);
-                    } else {
-                        let blobURL = window.URL.createObjectURL(blob);
-                        let tempLink = document.createElement('a');
-                        tempLink.style.display = 'none';
-                        tempLink.href = blobURL;
-                        tempLink.setAttribute('download', filename);
-                        
-                        if (typeof tempLink.download === 'undefined') {
-                            tempLink.setAttribute('target', '_blank');
-                        }
-                        if (filename == "FileStructure.json"){
-                            // console.log("getMyId :", UserStore.getMyId());
-                            fetch(blobURL).then((resp)=>{ 
-                                return resp.text() }).then((text)=>{
-                                    var json = JSON.parse(text);
-
-                                    this.setState({json: json});
-
-                                    if (json.type == "FileStructure") {
-                                        this.loadFolders(this.state.path);
-                                    }
-                                }
-                            );
-                        }
-                        
-                        window.URL.revokeObjectURL(blobURL);
-                    }
+            var n = data.messages.length;
+            for (var i=0; i<n; i++) {
+                console.log(data.messages[i]);
+                if (data.messages[i].content.document.file_name == "FileStructure.json") {
+                    fs = data.messages[i];
+                    return fs;
                 }
-            });
+            }
+        });
+        console.log("getFileStructureJSON", res);
+        return res;
+    }
 
+    async loadJSONFile() {
+        const { chatId, messageId } = this.state;
+
+        var fs = await this.getFileStructureJSON();
+        
+        var file = fs.content.document.document;
+        var filename = fs.content.document.file_name;
+
+        FileStore.getLocalFile(FileStore.getStore(), file, null, () => {
+            var blob = FileStore.getBlob(file.id);
+            console.warn('File Found', file)
+            if (blob) {
+                if (typeof window.navigator.msSaveBlob !== 'undefined') {
+                    window.navigator.msSaveBlob(blob, filename);
+                } else {
+                    let blobURL = window.URL.createObjectURL(blob);
+                    
+                    if (filename == "FileStructure.json"){
+                        fetch(blobURL).then((resp)=>{ 
+                            return resp.text() }).then((text)=>{
+                                var json = JSON.parse(text);
+
+                                this.setState({json: json, fileStructureFileId: fs.id});
+
+                                if (json.type == "FileStructure") {
+                                    this.loadFolders(this.state.path);
+                                }
+                            }
+                        );
+                    }
+                    
+                    window.URL.revokeObjectURL(blobURL);
+                }
+            }
         });
     }
 
-    async updateFileStructure() {
-        var file = new File(["0010"], "filename.json", {type: "application/json", lastModified: new Date().getTime()})
+    async updateFileStructure(json) {
+        var file = new File([JSON.stringify(json)], "FileStructure.json", {type: "application/json", lastModified: new Date().getTime()})
         var content = {
             '@type': 'inputMessageDocument',
             document: { '@type': 'inputFileBlob', name: file.name, data: file },
@@ -296,22 +282,38 @@ class DialogDetails extends React.Component {
         };
         
         // console.log("NewItem:", newItem);
-        // onSend(content, file);
         const { chatId } = this.state;
-        console.log(chatId);
-        // await AppStore.invokeScheduledAction(`clientUpdateClearHistory chatId=${chatId}`);
 
-        const result = await TdLibController.send({
+        const uploadRes = await TdLibController.send({
             '@type': 'sendMessage',
             chat_id: chatId,
             reply_to_message_id: 0,
             input_message_content: content
         });
+        console.log("Result", uploadRes);
+
+        var prevFileId = this.state.fileStructureFileId;
+        console.log("prevFileId", prevFileId);
+
+        // Delete Previous File
+        const delRes = await TdLibController.send({
+            '@type': 'deleteMessages',
+            chat_id: chatId,
+            message_ids: [prevFileId],
+            revoke: true
+        });
+
+        // this.setState({
+        //     fileStructureFileId: uploadRes.id
+        // });
+
+        this.state.fileStructureFileId = uploadRes.id;
+        
     }
 
-    addFolder() {
+    async addFolder() {
         console.log("newFolder");
-        this.updateFileStructure();
+        this.updateFileStructure(this.state.json);
     }
 
     render() {
