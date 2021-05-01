@@ -13,6 +13,9 @@ import { isAuthorizationReady } from '../../Utils/Common';
 import AppStore from '../../Stores/ApplicationStore';
 import '../ColumnMiddle/Header.css';
 
+import FolderIcon from '@material-ui/icons/Folder';
+import WhatsAppIcon from '@material-ui/icons/WhatsApp';
+
 class DialogsHeader extends React.Component {
     constructor(props) {
         super(props);
@@ -143,15 +146,9 @@ class DialogsHeader extends React.Component {
                     <MainMenuButton timeout={timeout} showClose={showBack} popup={popup} onClose={this.handleCloseSearch} />
                     {content}
                 </div>
-                <div className='header-redirects'>
-                    <img 
-                        src="https://img.icons8.com/ios/344/filled-chat.png"
-                        onClick={()=> this.props.page_change("chats")}
-                    ></img>
-                    <img 
-                        src="https://upload.wikimedia.org/wikipedia/commons/e/e5/Circle-icons-folder.svg"
-                        onClick={()=> this.props.page_change("storage")}
-                    ></img>
+                <div className='header-redirects'>                    
+                    <WhatsAppIcon className="redirectIcon" fontSize="large" onClick={()=> this.props.page_change("chats")} />
+                    <FolderIcon className="redirectIcon" fontSize="large" onClick={()=> this.props.page_change("storage")} />
                 </div>
             </>
         );

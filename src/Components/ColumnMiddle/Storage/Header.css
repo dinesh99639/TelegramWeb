@@ -24,3 +24,13 @@
     padding: 10px;
     cursor: pointer;
 }
+
+.operations {
+    width: 100%;
+    text-align: right;
+}
+.MuiButtonBase-root {
+    min-width: none;
+    padding: 10px;
+    border-radius: 50%;
+}

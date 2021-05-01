@@ -149,11 +149,13 @@
     align-items: center;
     overflow: hidden;
     flex-shrink: 0;
-    padding: 0 8px;
+    /* padding: 0 10x !important; */
+    margin: 0 10px;
 }
 
-.header-redirects img {
-    width: 40px;
+.header-redirects .redirectIcon {
+    /* width: 40px; */
     cursor: pointer;
     margin-right: 10px;
+    margin-left: 10px;
 }

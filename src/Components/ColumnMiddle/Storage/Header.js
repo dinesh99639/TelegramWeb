@@ -9,6 +9,9 @@ import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import './Header.css';
 
+import Button from '@material-ui/core/Button';
+import AddIcon from '@material-ui/icons/Add';
+
 class Header extends Component {
     constructor(props) {
         super(props);
@@ -37,6 +40,10 @@ class Header extends Component {
                         onClick={this.props.goBackPath}
                     ></img>
                     <h3>Storage</h3>
+
+                    <div className="operations">
+                        <Button onClick={()=>this.props.addFolder()}><AddIcon /></Button>
+                    </div>
                 </div>
             </>
         );

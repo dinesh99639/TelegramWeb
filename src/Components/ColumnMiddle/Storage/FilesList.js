@@ -50,6 +50,9 @@ class DialogDetails extends React.Component {
         this.getStorageChannelId = this.getStorageChannelId.bind(this);
         this.loadJSONFile = this.loadJSONFile.bind(this);
 
+        this.updateFileStructure = this.updateFileStructure.bind(this);
+        this.addFolder = this.addFolder.bind(this);
+
 
         this.getStorageChannelId();
         // console.warn(this.state);
@@ -156,8 +159,6 @@ class DialogDetails extends React.Component {
         this.setState({ path: newPath });
 
         this.loadFolders(newPath);
-        
-        // this.forceUpdate();
     }
 
     goBackPath() {
@@ -183,7 +184,7 @@ class DialogDetails extends React.Component {
         }));
         const storage_channel_id_array = await Promise.all(search_storage.map(x => x.catch(e => null)));
         const storage_channel_id = storage_channel_id_array[0].chat_ids[0];
-        
+
         TdLibController.clientUpdate({
             '@type': 'clientUpdateOpenChat',
             chatId: storage_channel_id,
@@ -194,6 +195,27 @@ class DialogDetails extends React.Component {
         
         if (!this.state.mounted) this.loadJSONFile();
         else this.loadFolders(this.state.path);
+    }
+
+    getFileStructureJSON(data, pre=false) {
+        var fs = null;
+        var pre_fs = null;
+        var n = data.messages.length;
+        for (var i=0; i<n; i++) {
+            console.log(data.messages[i]);
+            if (data.messages[i].content.document.file_name == "FileStructure.json") {
+                fs = data.messages[i].content.document;
+                for (var j=i+1; j<n; j++) {
+                    if (data.messages[i].content.document.file_name == "FileStructure.json") {
+                        pre_fs = data.messages[i].content.document;
+                        break;
+                    }
+                }
+                break;
+            }
+        }
+
+        return (!pre)?fs:pre_fs;
     }
 
     loadJSONFile() {
@@ -213,8 +235,8 @@ class DialogDetails extends React.Component {
             // console.warn("searchMessagesFilterDocument", data);
             const message = MessageStore.get(chatId, messageId);
 
-            var fs = data.messages[0].content.document;
-            if (fs.file_name != "FileStructure.json") fs = data.messages[1].content.document;
+            var fs = this.getFileStructureJSON(data);
+            console.log("fs", fs);
             
             var file = fs.document;
             var filename = fs.file_name;
@@ -260,6 +282,38 @@ class DialogDetails extends React.Component {
         });
     }
 
+    async updateFileStructure() {
+        var file = new File(["0010"], "filename.json", {type: "application/json", lastModified: new Date().getTime()})
+        var content = {
+            '@type': 'inputMessageDocument',
+            document: { '@type': 'inputFileBlob', name: file.name, data: file },
+            thumbnail: null,
+            caption: {
+                "@type": "formattedText",
+                "entities": [],
+                "text": ""
+            }
+        };
+        
+        // console.log("NewItem:", newItem);
+        // onSend(content, file);
+        const { chatId } = this.state;
+        console.log(chatId);
+        // await AppStore.invokeScheduledAction(`clientUpdateClearHistory chatId=${chatId}`);
+
+        const result = await TdLibController.send({
+            '@type': 'sendMessage',
+            chat_id: chatId,
+            reply_to_message_id: 0,
+            input_message_content: content
+        });
+    }
+
+    addFolder() {
+        console.log("newFolder");
+        this.updateFileStructure();
+    }
+
     render() {
         // console.warn("Rendering...");
 
@@ -296,6 +350,7 @@ class DialogDetails extends React.Component {
                 {/* <HeaderPlayer /> */}
                 <Header
                     // ref={this.headerRef}
+                    addFolder={this.addFolder}
                     goBackPath={this.goBackPath}
                 />
                 {/* <MessagesList 

@@ -228,7 +228,7 @@ module.exports = _slicedToArray;
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = function() {
-  return new Worker(__webpack_require__.p + "3ad33b62eaa8beaf5b79.worker.js");
+  return new Worker(__webpack_require__.p + "130f0ecf36ff90c87239.worker.js");
 };
 
 /***/ }),
@@ -1138,7 +1138,6 @@ module.exports = bytesToUuid;
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-// ESM COMPAT FLAG
 __webpack_require__.r(__webpack_exports__);
 
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/typeof.js
@@ -2430,7 +2429,7 @@ function () {
     key: "onResponse",
     value: function onResponse(response) {
       logger.debug('receive from worker: ', JSON.parse(JSON.stringify(response, function (key, value) {
-        if (key === 'arr' || key === 'data') {
+        if (key === 'arr' || key == 'data') {
           return undefined;
         }
 
@@ -2501,7 +2500,7 @@ function () {
       for (var key in response) {
         var field = response[key];
 
-        if (field && typeof_default()(field) === 'object' && key !== 'data' && key !== 'arr') {
+        if (field && typeof_default()(field) === 'object' && key != 'data' && key != 'arr') {
           response[key] = this.prepareResponse(field);
         }
       }

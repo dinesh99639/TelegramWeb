@@ -259,15 +259,15 @@ class Header extends Component {
                     subtitle = '';
                     showProgressAnimation = true;
                     break;
+                }
+            } else {
+                title = this.localize('Loading');
+                subtitle = '';
+                showProgressAnimation = true;
             }
-        } else {
-            title = this.localize('Loading');
-            subtitle = '';
-            showProgressAnimation = true;
-        }
-
-        control = control || (
-            <div className='header-details'>
+            
+            control = control || (
+                <div className='header-details'>
                 {showProgressAnimation ? (
                     <div
                         className={classNames('header-status', 'grow', chat ? 'cursor-pointer' : 'cursor-default')}
@@ -302,7 +302,6 @@ class Header extends Component {
             </div>
         );
         // console.log("chatId : ", chatId);
-
         return (
             <>
                 {control}

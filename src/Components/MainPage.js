@@ -28,7 +28,7 @@ import TdLibController from '../Controllers/TdLibController';
 import '../TelegramApp.css';
 import Actions from './Actions';
 import FileInfo from './ColumnLeft/FileInfo';
-import FilesList from './ColumnMiddle/Storage/FilesList';
+// import FilesList from './ColumnMiddle/Storage/FilesList';
 
 class MainPage extends React.Component {
     constructor(props) {
@@ -236,6 +236,7 @@ class MainPage extends React.Component {
             console.log("Chats Selected");
         }
         else if (this.state.page == "storage") {
+            const FilesList = React.lazy(() => import('./ColumnMiddle/Storage/FilesList'));
             page = <>
                 <FileInfo page_change={this.page_change} />
                 <FilesList 
